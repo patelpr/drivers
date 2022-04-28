@@ -6,8 +6,9 @@ import { VueMaskDirective } from "v-mask";
 import * as Vue2Leaflet from "vue2-leaflet";
 import L from "leaflet";
 // import "leaflet/dist/leaflet.css";
+import EasyCamera from "easy-vue-camera";
 
-
+Vue.use(EasyCamera);
 
 var firebaseConfig = {
   apiKey: "AIzaSyASOQIUVCneyQLGqN7Nc0AgqkxOsflMcfA",

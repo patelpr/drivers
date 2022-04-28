@@ -1,15 +1,15 @@
 <template>
   <div>
     <v-main>
-      <Map :load="load" />
+      <Map v-if="value == 0" :carrier="driver.carrier" :id="driver.id" />
       <v-bottom-sheet inset v-if="value > 1">
         <Upload v-if="value == 1" />
         <Info v-if="value == 2" :load="load" />
-        <Map v-if="value == 3" :load="load" />
+        <Profile v-if="value == 3" :user="user" />
       </v-bottom-sheet>
     </v-main>
     <Login v-if="!user" />
-    <v-bottom-navigation v-model="value" dark fixed bottom>
+    <v-bottom-navigation v-model="value" app dark fixed bottom>
       <v-btn @click="value = 0">
         <span>Map</span>
       </v-btn>
@@ -23,7 +23,7 @@
       </v-btn>
 
       <v-btn @click="value = 3">
-        <span>Image</span>
+        <span>Profile</span>
       </v-btn>
     </v-bottom-navigation>
   </div>
@@ -37,7 +37,7 @@ import Info from "./components/Info.vue";
 import firebase from "firebase";
 export default {
   data: () => ({
-    value: 0,
+    value: 3,
     user: null,
     driver: null,
     load: null,
@@ -47,18 +47,6 @@ export default {
     Login,
     Upload,
     Info,
-  },
-  methods: {
-    async getLoad(carrier, id) {
-      console.log(this.driver);
-      await firebase
-        .firestore()
-        .collection("users")
-        .doc(carrier)
-        .collection("loads")
-        .where("driver", "==", id)
-        .onSnapshot((doc) => doc.forEach((nd) => (this.load = nd.data())));
-    },
   },
   mounted() {
     firebase.auth().onAuthStateChanged((user) => {
@@ -71,7 +59,6 @@ export default {
             if (nd.exists) {
               this.driver = nd.data();
               this.user = user;
-              this.getLoad(nd.data().carrier, nd.data().id);
             } else {
               this.user = null;
               this.driver = null;

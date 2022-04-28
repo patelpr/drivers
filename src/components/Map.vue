@@ -2,7 +2,7 @@
   <div id="theMap">
     <v-map
       ref="myMap"
-      v-if="origin && destination && load"
+      v-if="load"
       :bounds="
         [
           [load.route.bbox[1], load.route.bbox[0]],
@@ -19,36 +19,21 @@
         :attribution="attribution"
       >
       </v-tilelayer>
-      <v-marker :lat-lng="origin"></v-marker>
-      <v-marker :lat-lng="destination"></v-marker>
       <v-marker :lat-lng="[lat, lng]" />
       <l-polyline :lat-lngs="poly.geometry.coordinates" lineCap lineJoin>
       </l-polyline>
-    </v-map>
-    <v-map
-      ref="myMap"
-      v-else
-      :bounds="[
-        [47.6185221, -100.7914713],
-        [30.889239, -97.526134],
-      ]"
-      style="height: 100vh; z-index: 0"
-    >
-      <v-tilelayer
-        url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"
-        :attribution="attribution"
-      >
-      </v-tilelayer>
     </v-map>
   </div>
 </template>
 
 <script>
 import { LMap, LTileLayer, LMarker, LPolyline } from "vue2-leaflet";
+import firebase from "firebase";
 import H from "../assets/fastpolylines";
 export default {
   data() {
     return {
+      load: null,
       selectedLoad: null,
       lat: "",
       lng: "",
@@ -59,7 +44,6 @@ export default {
         '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>',
     };
   },
-  name: "map",
   components: {
     "v-map": LMap,
     "v-tilelayer": LTileLayer,
@@ -67,26 +51,30 @@ export default {
     "l-polyline": LPolyline,
   },
   props: {
-    load: { type: Object },
-  },
-  watch: {
-    load: function (x) {
-      this.origin = [x.origin.location.lat, x.origin.location.lng];
-      this.destination = [
-        x.destination.location.lat,
-        x.destination.location.lng,
-      ];
-
-      this.poly = this.decode(x.route.geometry.coordinates);
-      this.selectedLoad = x;
-    },
+    carrier: { type: String },
+    id: { type: String },
   },
   mounted() {
-    this.selectedLoad = this.load;
-    this.load = this.selectedLoad;
     this.startLocationUpdates();
+    this.getLoad(this.carrier, this.id);
   },
   methods: {
+    async getLoad(carrier, id) {
+      await firebase
+        .firestore()
+        .collection("users")
+        .doc(carrier)
+        .collection("loads")
+        .where("driver", "==", id)
+        .onSnapshot((doc) =>
+          doc.forEach(
+            (nd) => (
+              (this.load = nd.data()),
+              (this.poly = this.decode(this.load.route.geometry.coordinates))
+            )
+          )
+        );
+    },
     startLocationUpdates() {
       navigator.geolocation.watchPosition(
         (position) => {

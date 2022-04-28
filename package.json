@@ -10,6 +10,8 @@
 	"dependencies": {
 		"axios": "^0.21.1",
 		"core-js": "^3.6.5",
+		"easy-js-camera": "^2.1.0",
+		"easy-vue-camera": "^1.0.5",
 		"firebase": "^8.6.2",
 		"firebaseui": "^4.8.0",
 		"leaflet": "^1.7.1",
