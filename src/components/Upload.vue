@@ -1,13 +1,20 @@
 <template>
- <v-easy-camera
-    v-model="image"></v-easy-camera>
+  <v-easy-camera ref="camera" v-model="image"></v-easy-camera>
 </template>
 
 
 <script>
+import EasyCamera from "easy-vue-camera";
+
 export default {
+  components: {
+    "v-easy-camera": EasyCamera,
+  },
   data() {
     return { image: "" };
+  },
+  mounted() {
+    this.$refs.camera.start();
   },
   methods: {
     fileInput(e) {

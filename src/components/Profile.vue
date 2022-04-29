@@ -1,16 +1,19 @@
 <template>
-  <div></div>
+  <div>{user.photoUrl}</div>
 </template>
 
 <script>
-export default {
-    props:{
-        
-    }
+import firebase from "firebase";
 
-}
+export default {
+  data: () => ({
+    user: null,
+  }),
+  mounted() {
+    firebase.auth().onAuthStateChanged((user) => (this.user = user));
+  },
+};
 </script>
 
 <style>
-
 </style>

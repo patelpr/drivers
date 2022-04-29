@@ -2,11 +2,9 @@
   <div>
     <v-main>
       <Map v-if="value == 0" :carrier="driver.carrier" :id="driver.id" />
-      <v-bottom-sheet inset v-if="value > 1">
-        <Upload v-if="value == 1" />
-        <Info v-if="value == 2" :load="load" />
-        <Profile v-if="value == 3" :user="user" />
-      </v-bottom-sheet>
+      <Upload v-if="value == 1" />
+      <Info v-if="value == 2" :load="load" />
+      <Profile v-if="value == 3" :user="user" />
     </v-main>
     <Login v-if="!user" />
     <v-bottom-navigation v-model="value" app dark fixed bottom>
@@ -37,9 +35,9 @@ import Info from "./components/Info.vue";
 import firebase from "firebase";
 export default {
   data: () => ({
-    value: 3,
+    value: 2,
     user: null,
-    driver: null,
+    driver: { carrier: null },
     load: null,
   }),
   components: {
