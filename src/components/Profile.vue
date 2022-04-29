@@ -1,11 +1,12 @@
 <template>
-  <div>{user.photoUrl}</div>
+  <div class="text-center">Profile</div>
 </template>
 
 <script>
 import firebase from "firebase";
 
 export default {
+  name: "Profile",
   data: () => ({
     user: null,
   }),

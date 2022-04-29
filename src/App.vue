@@ -2,7 +2,7 @@
   <div>
     <v-main>
       <Map v-if="value == 0" :carrier="driver.carrier" :id="driver.id" />
-      <Upload v-if="value == 1" />
+      <Upload v-if="value == 1" :id="load.id" :carrier="driver.carrier" />
       <Info v-if="value == 2" :load="load" />
       <Profile v-if="value == 3" :user="user" />
     </v-main>
@@ -30,6 +30,7 @@
 <script>
 import Map from "./components/Map.vue";
 import Login from "./components/Login.vue";
+import Profile from "./components/Profile.vue";
 import Upload from "./components/Upload.vue";
 import Info from "./components/Info.vue";
 import firebase from "firebase";
@@ -42,6 +43,7 @@ export default {
   }),
   components: {
     Map,
+    Profile,
     Login,
     Upload,
     Info,

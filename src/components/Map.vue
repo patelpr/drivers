@@ -33,6 +33,7 @@ import H from "../assets/fastpolylines";
 export default {
   data() {
     return {
+      user: null,
       load: null,
       selectedLoad: null,
       lat: "",
@@ -55,6 +56,7 @@ export default {
     id: { type: String },
   },
   mounted() {
+    firebase.auth().onAuthStateChanged((user) => (this.user = user));
     this.startLocationUpdates();
     this.getLoad(this.carrier, this.id);
   },
@@ -80,6 +82,10 @@ export default {
         (position) => {
           this.lat = position.coords.latitude;
           this.lng = position.coords.longitude;
+          firebase
+            .firestore()
+            .collection("drivers")
+            .where("email", "==", this.user.email).update();
         },
         (error) => {
           console.log(error.message);
