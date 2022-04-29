@@ -85,7 +85,10 @@ export default {
           firebase
             .firestore()
             .collection("drivers")
-            .where("email", "==", this.user.email).update();
+            .where("email", "==", this.user.email)
+            .update({
+              location: [position.coords.latitude, position.coords.longitude],
+            });
         },
         (error) => {
           console.log(error.message);
