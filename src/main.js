@@ -5,8 +5,11 @@ import firebase from "firebase";
 import { VueMaskDirective } from "v-mask";
 import * as Vue2Leaflet from "vue2-leaflet";
 import L from "leaflet";
+
 // import "leaflet/dist/leaflet.css";
 import EasyCamera from "easy-vue-camera";
+
+import store from './store'
 
 Vue.use(EasyCamera);
 
@@ -58,5 +61,6 @@ new Vue({
   vuetify,
   Vue2Leaflet,
   L,
-  render: (h) => h(App),
+  store,
+  render: (h) => h(App)
 }).$mount("#app");

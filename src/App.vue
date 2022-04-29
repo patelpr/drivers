@@ -2,7 +2,7 @@
   <div>
     <v-main>
       <Map v-if="value == 0" :carrier="driver.carrier" :id="driver.id" />
-      <Upload v-if="value == 1" :id="load.id" :carrier="driver.carrier" />
+      <Upload v-if="value == 1"  />
       <Info v-if="value == 2" :load="load" />
       <Profile v-if="value == 3" :user="user" />
     </v-main>

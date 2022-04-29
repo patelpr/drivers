@@ -5,9 +5,9 @@
       <v-file-input
         type="file"
         @change="fileInput"
-        outlined
+        filled
         accept="image/*"
-        capture="environment"
+        capture
       ></v-file-input>
     </v-row>
   </v-container>
