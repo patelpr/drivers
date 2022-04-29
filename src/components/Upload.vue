@@ -1,5 +1,5 @@
 <template>
-  <v-easy-camera ref="camera" v-model="image"></v-easy-camera>
+  <v-easy-camera ref="camera" fullscreen v-on:input="fileInput" v-model="image"></v-easy-camera>
 </template>
 
 
