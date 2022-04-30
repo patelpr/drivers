@@ -1,12 +1,12 @@
 <template>
   <div>
     <v-main>
-      <Map v-if="value == 0" :carrier="driver.carrier" :id="driver.id" />
-      <Upload v-if="value == 1"  />
-      <Info v-if="value == 2" :load="load" />
-      <Profile v-if="value == 3" :user="user" />
+      <Map v-if="value == 0 && $store.state.user" />
+      <Upload v-if="value == 1" />
+      <Info v-if="value == 2" />
+      <Profile v-if="value == 3" />
     </v-main>
-    <Login v-if="!user" />
+    <Login v-if="!$store.state.user" />
     <v-bottom-navigation v-model="value" app dark fixed bottom>
       <v-btn @click="value = 0">
         <span>Map</span>
@@ -29,18 +29,25 @@
 
 <script>
 import Map from "./components/Map.vue";
+import firebase from "firebase";
 import Login from "./components/Login.vue";
 import Profile from "./components/Profile.vue";
 import Upload from "./components/Upload.vue";
 import Info from "./components/Info.vue";
-import firebase from "firebase";
+import { mapGetters, mapActions } from "vuex";
 export default {
   data: () => ({
-    value: 2,
-    user: null,
-    driver: { carrier: null },
-    load: null,
+    value: 0,
   }),
+  computed: {
+    ...mapGetters({
+      user: "getCurrentUser",
+      driver: "getCurrentDriver",
+      load: "getCurrentLoad",
+      location: "getDriverLocation",
+      poly: "getPoly",
+    }),
+  },
   components: {
     Map,
     Profile,
@@ -48,24 +55,19 @@ export default {
     Upload,
     Info,
   },
+  methods: {
+    ...mapActions({
+      setUser: "setUser",
+      setDriver: "setDriver",
+      setLoad: "setLoad",
+    }),
+  },
   mounted() {
     firebase.auth().onAuthStateChanged((user) => {
-      firebase
-        .firestore()
-        .collection("drivers")
-        .where("email", "==", user.email)
-        .onSnapshot((doc) => {
-          doc.forEach((nd) => {
-            if (nd.exists) {
-              this.driver = nd.data();
-              this.user = user;
-            } else {
-              this.user = null;
-              this.driver = null;
-              firebase.auth().signOut();
-            }
-          });
-        });
+      user
+        ? this.$store.commit("storeUser", user)
+        : this.$store.commit("storeUser", null);
+      this.$store.dispatch("setDriver");
     });
   },
 };

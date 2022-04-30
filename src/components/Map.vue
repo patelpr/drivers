@@ -2,11 +2,11 @@
   <div id="theMap">
     <v-map
       ref="myMap"
-      v-if="load"
+      v-if="$store.state.load"
       :bounds="
         [
-          [load.route.bbox[1], load.route.bbox[0]],
-          [load.route.bbox[3], load.route.bbox[2]],
+          [$store.state.load.route.bbox[1], $store.state.load.route.bbox[0]],
+          [$store.state.load.route.bbox[3], $store.state.load.route.bbox[2]],
         ] || [
           [38.6185221, -92.7914713],
           [33.889239, -84.226134],
@@ -19,8 +19,14 @@
         :attribution="attribution"
       >
       </v-tilelayer>
-      <v-marker :lat-lng="[lat, lng]" />
-      <l-polyline :lat-lngs="poly.geometry.coordinates" lineCap lineJoin>
+      <v-marker
+        v-if="$store.state.driver.location"
+        :lat-lng="[
+          $store.state.driver.location.lat,
+          $store.state.driver.location.lng,
+        ]"
+      ></v-marker>
+      <l-polyline :lat-lngs="$store.state.load.poly" lineCap lineJoin>
       </l-polyline>
     </v-map>
   </div>
@@ -28,22 +34,29 @@
 
 <script>
 import { LMap, LTileLayer, LMarker, LPolyline } from "vue2-leaflet";
-import firebase from "firebase";
-import H from "../assets/fastpolylines";
+// import firebase from "firebase";
+import { mapGetters, mapActions } from "vuex";
+// import H from "../assets/fastpolylines";
 export default {
-  data() {
-    return {
-      user: null,
-      load: null,
-      selectedLoad: null,
-      lat: "",
-      lng: "",
-      poly: null,
-      origin: null,
-      destination: null,
-      attribution:
-        '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>',
-    };
+  data: () => ({
+    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>',
+  }),
+  computed: {
+    ...mapGetters({
+      user: "getCurrentUser",
+      driver: "getCurrentDriver",
+      load: "getCurrentLoad",
+      location: "getDriverLocation",
+      poly: "getPoly",
+    }),
+    // user: null,
+    // load: null,
+    // selectedLoad: null,
+    // lat: "",
+    // lng: "",
+    // poly: null,
+    // origin: null,
+    // destination: null,
   },
   components: {
     "v-map": LMap,
@@ -56,55 +69,26 @@ export default {
     id: { type: String },
   },
   mounted() {
-    firebase.auth().onAuthStateChanged((user) => (this.user = user));
-    this.startLocationUpdates();
-    this.getLoad(this.carrier, this.id);
+    this.setDriver;
+    this.setLoad;
+    // firebase.auth().onAuthStateChanged((user) => (this.user = user));
+    // this.startLocationUpdates();
+    // this.getLoad(this.carrier, this.id);
   },
   methods: {
-    async getLoad(carrier, id) {
-      await firebase
-        .firestore()
-        .collection("users")
-        .doc(carrier)
-        .collection("loads")
-        .where("driver", "==", id)
-        .onSnapshot((doc) =>
-          doc.forEach(
-            (nd) => (
-              (this.load = nd.data()),
-              (this.poly = this.decode(this.load.route.geometry.coordinates))
-            )
-          )
-        );
-    },
+    ...mapActions({
+      setUser: "setUser",
+      setDriver: "setDriver",
+      setLoad: "setLoad",
+    }),
+
     startLocationUpdates() {
       navigator.geolocation.watchPosition(
-        (position) => {
-          this.lat = position.coords.latitude;
-          this.lng = position.coords.longitude;
-          firebase
-            .firestore()
-            .collection("drivers")
-            .where("email", "==", this.user.email)
-            .update({
-              location: [position.coords.latitude, position.coords.longitude],
-            });
-        },
+        (position) => this.$store.dispatch("updateLocation", position),
         (error) => {
           console.log(error.message);
         }
       );
-    },
-
-    decode(str) {
-      let lines = H.decode(str);
-      return {
-        type: "Feature",
-        geometry: {
-          type: "LineString",
-          coordinates: lines.polyline,
-        },
-      };
     },
   },
 };

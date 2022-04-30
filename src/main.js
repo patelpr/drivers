@@ -5,35 +5,21 @@ import firebase from "firebase";
 import { VueMaskDirective } from "v-mask";
 import * as Vue2Leaflet from "vue2-leaflet";
 import L from "leaflet";
-
 // import "leaflet/dist/leaflet.css";
-import EasyCamera from "easy-vue-camera";
-
-import store from './store'
-
-Vue.use(EasyCamera);
+import store from "./store";
 
 var firebaseConfig = {
-  apiKey: "AIzaSyASOQIUVCneyQLGqN7Nc0AgqkxOsflMcfA",
-  authDomain: "progistics-app.firebaseapp.com",
-  projectId: "progistics-app",
-  storageBucket: "progistics-app.appspot.com",
-  messagingSenderId: "707547149273",
-  appId: "1:707547149273:web:8b5e1d5d1bc7be398cdfc8",
-  measurementId: "G-05HYKRD27Y",
+	apiKey: "AIzaSyASOQIUVCneyQLGqN7Nc0AgqkxOsflMcfA",
+	authDomain: "progistics-app.firebaseapp.com",
+	projectId: "progistics-app",
+	storageBucket: "progistics-app.appspot.com",
+	messagingSenderId: "707547149273",
+	appId: "1:707547149273:web:8b5e1d5d1bc7be398cdfc8",
+	measurementId: "G-05HYKRD27Y",
 };
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-
-firebase.getCurrentUser = () => {
-  return new Promise((resolve, reject) => {
-    const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
-      unsubscribe();
-      resolve(user);
-    }, reject);
-  });
-};
-
+console.log(store)
 //INPUT FORMATTER : v-mask="'##-##-####'" is equal to 00-00-0000
 Vue.directive("mask", VueMaskDirective);
 //End Input Formatter
@@ -46,9 +32,9 @@ Vue.use(L);
 delete L.Icon.Default.prototype._getIconUrl;
 // eslint-disable-next-line
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: require("leaflet/dist/images/marker-icon-2x.png"),
-  iconUrl: require("leaflet/dist/images/marker-icon.png"),
-  shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
+	iconRetinaUrl: require("leaflet/dist/images/marker-icon-2x.png"),
+	iconUrl: require("leaflet/dist/images/marker-icon.png"),
+	shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
 });
 //END MAP ELEMENTS
 
@@ -58,9 +44,9 @@ Vue.config.productionTip = false;
 //https://github.com/msukmanowsky/gapi-firebase
 
 new Vue({
-  vuetify,
-  Vue2Leaflet,
-  L,
-  store,
-  render: (h) => h(App)
+	vuetify,
+	Vue2Leaflet,
+	L,
+	store,
+	render: (h) => h(App),
 }).$mount("#app");
